@@ -210,6 +210,7 @@ int main()
                 if(command>commandcount || command > MAXPIDS-1 || command < 0)
                 {
                     printf("Command not in history.\n");
+                    command = -1;
                 }
                 else
                 {
