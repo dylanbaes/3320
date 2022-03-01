@@ -209,15 +209,14 @@ int main()
                     // The terminal then prompts that the command does not exist and continues to loop over the outer loop to keep displaying >msh awaiting other inputs
                     if(ret == -1)
                     {
-                        int status;
+                        
                         printf("%s: Command not found.\n", token[0]);  //There's no corresponding executable command in the path? Display that the command is not found and continue to loop over the while loop
-                        wait(&status);
-                        exit(0);
+                        _exit(EXIT_FAILURE); //Because the exec fails via invalid command, _exit is called so that the child process does not interfere with the parent process
                     }
                 }
                 else
                 {
-                    // wait until the process is terminated
+                    // wait until the child process finishes terminating to avoid having zombie processes
                     int status;
                     wait(&status);
                 }
