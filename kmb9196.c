@@ -3,6 +3,7 @@ Name: Karl Dylan Baes
 ID: 1001839195
 */
 
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +22,7 @@ int pidin = 0;
 pid_t history[MAXPIDS];
 char *command_history[MAXPIDS];
 int commandcount = 0;
+int command = 0;
 void pidhistory()
 {
     int i = pidin;
@@ -47,7 +49,7 @@ void commandHistory()
     {
         if (command_history[i] != NULL)
         {
-            printf("%d: %s\n", k++, command_history[i]);
+            printf("%d: %s", k++, command_history[i]);
         }
         i++;
         if (i > MAXPIDS-1)
@@ -77,14 +79,22 @@ int main()
     while( 1 ) 
     {
         // Print out the msh prompt
-        printf ("msh> ");
+        if (command == 0)
+        {
+            printf ("msh> ");
 
-        // Read the command from the commandline.  The
-        // maximum command that will be read is MAXCOMMANDSIZE
-        // This while command will wait here until the user
-        // inputs something since fgets returns NULL when there
-        // is no input
-        while( !fgets (command_string, MAXCOMMANDSIZE, stdin) );
+            // Read the command from the commandline.  The
+            // maximum command that will be read is MAXCOMMANDSIZE
+            // This while command will wait here until the user
+            // inputs something since fgets returns NULL when there
+            // is no input
+            while( !fgets (command_string, MAXCOMMANDSIZE, stdin) );
+        }
+        else
+        {
+            command_string = command_history[command];
+        }
+        
 
         /* Parse input */
         char *token[MAXARGS];
@@ -96,9 +106,8 @@ int main()
         char *argument_ptr;                                         
                                                             
         char *working_string  = strdup( command_string );     
-        command_history[commandcount] = (char*)malloc(MAXCOMMANDSIZE);           
-        strncpy(command_history[commandcount], command_string, MAXCOMMANDSIZE);
-        command_history[commandcount][strlen(command_history[commandcount])-1] = '\0';
+        command_history[commandcount] = strdup(command_string);
+        //command_history[commandcount][strlen(command_history[commandcount])-1] = '\0';
         commandcount++;
         if (commandcount > MAXPIDS-1)
         {
@@ -108,7 +117,7 @@ int main()
         // keep track of its original value so we can deallocate
         // the correct amount at the end
         char *head_ptr = working_string;
-
+        command = 0;
         // Tokenize the input strings with whitespace used as the delimiter
         while ( ( (argument_ptr = strsep(&working_string, WHITESPACE ) ) != NULL) && 
                 (token_count<MAXARGS))
@@ -152,22 +161,26 @@ int main()
             else if (!strcmp(token[0], "pidhistory"))
             {
                 pidhistory();
+                
             }
             else if (!strcmp(token[0], "history"))
             {
                 commandHistory();
+                
             }
             else if (!strcmp(token[0], "cd"))
             {
-                printf("Do CD\n");
+                //printf("Do CD\n");
+                chdir(token[1]);
+                
             }
             else if (token[0][0] == 33)
             {
                 //printf("Do !\n");
                 char* in = ++token[0];
                 //printf("%s\n", in);
-                int command = atoi(in);
-                //printf("%d\n", command);
+                command = atoi(in);
+                printf("%d\n", command);
                 if(command>commandcount || command > MAXPIDS-1 || command < 0)
                 {
                     printf("Command not in history.\n");
@@ -175,7 +188,7 @@ int main()
                 else
                 {
                     char* newcom = command_history[command];
-                    
+                    printf("%s happens\n", newcom);
                 }
             }
             else
