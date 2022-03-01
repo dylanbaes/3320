@@ -13,10 +13,10 @@ ID: 1001839195
 #include <signal.h>
 #include <errno.h>
 #define WHITESPACE " \t\n"
-#define MAXARGS 5
+#define MAXARGS 10
 #define MAXPIDS 15
 #define MAXCOMMANDSIZE 255
-// MAX values are defined for concrete required values of max arguments, and max pids via requirements 7 and 11
+// MAX values are defined for concrete required values of max arguments and max pids via requirements 7 and 11
 
 int pidin = 0;
 pid_t history[MAXPIDS];
@@ -143,6 +143,8 @@ int main()
         // continue through the loop if there was no input
         if (token[0] == NULL) 
         {
+            commandcount--;
+            command_history[commandcount] = NULL;
             continue;
         }
         else
@@ -209,6 +211,7 @@ int main()
                     {
                         int status;
                         printf("%s: Command not found.\n", token[0]);  //There's no corresponding executable command in the path? Display that the command is not found and continue to loop over the while loop
+                        wait(&status);
                         exit(0);
                     }
                 }
