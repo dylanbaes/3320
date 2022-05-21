@@ -1,6 +1,7 @@
 /*
 Name: Karl Dylan Baes
 ID: 1001839195
+BashShell Clone that allows for the creation and manipulation of new processes and other commands a normal bash shell would have
 */
 
 #define _GNU_SOURCE
@@ -49,7 +50,7 @@ void pidhistory()
     }
 }
 
-// functional commandhistory displayes the previous commands that were entered by the user
+// functional commandhistory displays the previous commands that were entered by the user
 // satisfies requirement 12 partially as it does not take into account the '!' case
 void commandhistory()
 {
